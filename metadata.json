@@ -1,0 +1,6 @@
+{
+  "name": "KDP Formatter",
+  "description": "Professional KDP book formatting suite: 6x9 paperback layout, front & back matter editor, live proof preview, and 100% KDP readiness checklist.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
