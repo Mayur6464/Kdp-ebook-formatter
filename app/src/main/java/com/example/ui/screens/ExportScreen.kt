@@ -188,6 +188,21 @@ fun ExportScreen(
 
             item {
                 ExportOptionCard(
+                    title = "Interactive Web Edition (.html / Embed)",
+                    subtitle = "Standalone HTML5 Web Cloud Reader with light/dark/sepia theme toggles & web embed code",
+                    badge = "Web Reader",
+                    icon = Icons.Default.Language,
+                    buttonTag = "export_web_button",
+                    onClick = {
+                        viewModel.generatePdfWithProgress(context, "WEB_VERSION_HTML") { exportedFile ->
+                            shareFile(context, exportedFile, "text/html")
+                        }
+                    }
+                )
+            }
+
+            item {
+                ExportOptionCard(
                     title = "Google Docs Seamless Delivery",
                     subtitle = "Copy structured manuscript text for seamless 1-tap paste into Google Docs",
                     badge = "Google Docs",

@@ -187,33 +187,50 @@ fun ExportSettingsBottomSheet(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    // Paperback Card
-                    FormatPresetCard(
-                        title = "Paperback Print",
-                        subtitle = "6\"×9\" Print Ready",
-                        badge = "PDF/DOCX",
-                        isSelected = previewMode == PreviewMode.PAPERBACK_6X9,
-                        icon = Icons.Default.Description,
-                        details = listOf("1.0\" Margins + 0.125\" Gutter", "Georgia 12pt Justified", "Running Headers & Page #s"),
-                        onSelect = { viewModel.applyPaperbackPreset() },
-                        modifier = Modifier.weight(1f).testTag("select_paperback_preset")
-                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        // Paperback Card
+                        FormatPresetCard(
+                            title = "Paperback",
+                            subtitle = "6\"×9\" Print",
+                            badge = "PDF/DOCX",
+                            isSelected = previewMode == PreviewMode.PAPERBACK_6X9,
+                            icon = Icons.Default.Description,
+                            details = listOf("1.0\" Margins", "Georgia 12pt", "Headers & Page #s"),
+                            onSelect = { viewModel.applyPaperbackPreset() },
+                            modifier = Modifier.weight(1f).testTag("select_paperback_preset")
+                        )
 
-                    // Kindle Card
-                    FormatPresetCard(
-                        title = "Kindle eBook",
-                        subtitle = "Reflowable ePub",
-                        badge = "Kindle",
-                        isSelected = previewMode == PreviewMode.KINDLE_EBOOK,
-                        icon = Icons.Default.PhoneAndroid,
-                        details = listOf("0.5\" Dynamic Margins", "Georgia 14pt Reflowable", "No Static Page Numbers"),
-                        onSelect = { viewModel.applyKindlePreset() },
-                        modifier = Modifier.weight(1f).testTag("select_kindle_preset")
-                    )
+                        // Kindle Card
+                        FormatPresetCard(
+                            title = "Kindle eBook",
+                            subtitle = "Reflow ePub",
+                            badge = "Kindle",
+                            isSelected = previewMode == PreviewMode.KINDLE_EBOOK,
+                            icon = Icons.Default.PhoneAndroid,
+                            details = listOf("0.5\" Margins", "Georgia 14pt", "Reflowable"),
+                            onSelect = { viewModel.applyKindlePreset() },
+                            modifier = Modifier.weight(1f).testTag("select_kindle_preset")
+                        )
+
+                        // Web Edition Card
+                        FormatPresetCard(
+                            title = "Web Edition",
+                            subtitle = "HTML5 Reader",
+                            badge = "Web",
+                            isSelected = previewMode == PreviewMode.WEB_VERSION,
+                            icon = Icons.Default.Language,
+                            details = listOf("HTML5 Web Reader", "Interactive TOC", "Themes & Sizing"),
+                            onSelect = { viewModel.applyWebVersionPreset() },
+                            modifier = Modifier.weight(1f).testTag("select_web_preset")
+                        )
+                    }
                 }
             }
 

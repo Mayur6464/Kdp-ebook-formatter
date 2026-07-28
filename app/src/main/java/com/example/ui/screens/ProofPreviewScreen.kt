@@ -84,16 +84,24 @@ fun ProofPreviewScreen(
                     SegmentedButton(
                         selected = previewMode == PreviewMode.PAPERBACK_6X9,
                         onClick = { viewModel.setPreviewMode(PreviewMode.PAPERBACK_6X9) },
-                        shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2)
+                        shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3)
                     ) {
-                        Text("Paperback Print (6\"×9\")", fontSize = 12.sp)
+                        Text("Paperback (6\"×9\")", fontSize = 11.sp)
                     }
                     SegmentedButton(
                         selected = previewMode == PreviewMode.KINDLE_EBOOK,
                         onClick = { viewModel.setPreviewMode(PreviewMode.KINDLE_EBOOK) },
-                        shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2)
+                        shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3)
                     ) {
-                        Text("Kindle eBook Reflow", fontSize = 12.sp)
+                        Text("Kindle eBook", fontSize = 11.sp)
+                    }
+                    SegmentedButton(
+                        selected = previewMode == PreviewMode.WEB_VERSION,
+                        onClick = { viewModel.setPreviewMode(PreviewMode.WEB_VERSION) },
+                        shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3),
+                        modifier = Modifier.testTag("preview_mode_web_button")
+                    ) {
+                        Text("Web Edition", fontSize = 11.sp)
                     }
                 }
             }
@@ -141,61 +149,159 @@ fun ProofPreviewScreen(
             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
 
             // Proof Page Area
-            if (previewMode == PreviewMode.PAPERBACK_6X9) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                ) {
-                    KdpPagePaperView(
-                        book = currentBook,
-                        section = activeSection,
-                        pageIndex = currentPageIndex,
-                        showMarginsOverlay = showGutterOverlay,
-                        modifier = Modifier.widthIn(max = 340.dp)
-                    )
-                }
-            } else {
-                // Kindle eBook View
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = PaperCream),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                ) {
-                    LazyColumn(
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+            when (previewMode) {
+                PreviewMode.PAPERBACK_6X9 -> {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
                     ) {
-                        item {
-                            Text(
-                                text = activeSection.title,
-                                fontSize = 22.sp,
-                                fontFamily = FontFamily.Serif,
-                                fontWeight = FontWeight.Bold,
-                                color = PaperText
-                            )
-                            if (activeSection.subtitle.isNotBlank()) {
+                        KdpPagePaperView(
+                            book = currentBook,
+                            section = activeSection,
+                            pageIndex = currentPageIndex,
+                            showMarginsOverlay = showGutterOverlay,
+                            modifier = Modifier.widthIn(max = 340.dp)
+                        )
+                    }
+                }
+                PreviewMode.KINDLE_EBOOK -> {
+                    // Kindle eBook View
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = PaperCream),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                    ) {
+                        LazyColumn(
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            item {
                                 Text(
-                                    text = activeSection.subtitle,
+                                    text = activeSection.title,
+                                    fontSize = 22.sp,
+                                    fontFamily = FontFamily.Serif,
+                                    fontWeight = FontWeight.Bold,
+                                    color = PaperText
+                                )
+                                if (activeSection.subtitle.isNotBlank()) {
+                                    Text(
+                                        text = activeSection.subtitle,
+                                        fontSize = 16.sp,
+                                        fontFamily = FontFamily.Serif,
+                                        color = Color(0xFF52525B)
+                                    )
+                                }
+                                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
+                            }
+
+                            item {
+                                Text(
+                                    text = activeSection.contentText,
                                     fontSize = 16.sp,
                                     fontFamily = FontFamily.Serif,
-                                    color = Color(0xFF52525B)
+                                    lineHeight = 24.sp,
+                                    color = PaperText
                                 )
                             }
-                            HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
                         }
+                    }
+                }
+                PreviewMode.WEB_VERSION -> {
+                    // Web Edition View
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFFAF7F2)),
+                        shape = RoundedCornerShape(12.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            // Web Header bar
+                            Surface(
+                                color = Color(0xFFF3EDD7),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(
+                                            imageVector = Icons.Default.Language,
+                                            contentDescription = null,
+                                            tint = GoldPrimary,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(
+                                            text = "Web Cloud Reader",
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 13.sp,
+                                            color = Color(0xFF2B2B2B)
+                                        )
+                                    }
 
-                        item {
-                            Text(
-                                text = activeSection.contentText,
-                                fontSize = 16.sp,
-                                fontFamily = FontFamily.Serif,
-                                lineHeight = 24.sp,
-                                color = PaperText
-                            )
+                                    Surface(
+                                        color = GoldPrimary,
+                                        shape = RoundedCornerShape(12.dp)
+                                    ) {
+                                        Text(
+                                            text = "HTML5 Web Ready",
+                                            fontSize = 10.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.Black,
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                        )
+                                    }
+                                }
+                            }
+
+                            HorizontalDivider(color = Color(0xFFE2DCD2))
+
+                            LazyColumn(
+                                contentPadding = PaddingValues(20.dp),
+                                verticalArrangement = Arrangement.spacedBy(14.dp),
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                item {
+                                    Text(
+                                        text = activeSection.title,
+                                        fontSize = 24.sp,
+                                        fontFamily = FontFamily.Serif,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFF111111)
+                                    )
+                                    if (activeSection.subtitle.isNotBlank()) {
+                                        Text(
+                                            text = activeSection.subtitle,
+                                            fontSize = 15.sp,
+                                            fontFamily = FontFamily.Serif,
+                                            color = Color(0xFF666666)
+                                        )
+                                    }
+                                    HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = Color(0xFFE2DCD2))
+                                }
+
+                                item {
+                                    Text(
+                                        text = activeSection.contentText,
+                                        fontSize = 17.sp,
+                                        fontFamily = FontFamily.Serif,
+                                        lineHeight = 26.sp,
+                                        color = Color(0xFF2B2B2B)
+                                    )
+                                }
+                            }
                         }
                     }
                 }

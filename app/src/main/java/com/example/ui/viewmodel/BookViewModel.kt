@@ -25,7 +25,8 @@ import java.io.FileOutputStream
 
 enum class PreviewMode {
     PAPERBACK_6X9,
-    KINDLE_EBOOK
+    KINDLE_EBOOK,
+    WEB_VERSION
 }
 
 class BookViewModel(application: Application) : AndroidViewModel(application) {
@@ -649,6 +650,35 @@ class BookViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun applyWebVersionPreset() {
+        val currentBook = book.value ?: return
+        viewModelScope.launch {
+            repository.updateBook(
+                currentBook.copy(
+                    trimWidthInches = 6.0f,
+                    trimHeightInches = 9.0f,
+                    marginTopInches = 0.5f,
+                    marginBottomInches = 0.5f,
+                    marginLeftInches = 0.5f,
+                    marginRightInches = 0.5f,
+                    gutterInches = 0.0f,
+                    bodyFontFamily = "Georgia",
+                    bodyFontSizePt = 16,
+                    chapterTitleSizePt = 24,
+                    lineSpacingMultiplier = 1.6f,
+                    enableRunningHeaders = false,
+                    enablePageNumbers = true,
+                    startPageNumbersAfterFrontMatter = false,
+                    widowOrphanControl = true,
+                    cleanPageBreaksBeforeChapters = true
+                )
+            )
+            _previewMode.value = PreviewMode.WEB_VERSION
+            triggerPreferencesSyncWorker()
+            _exportSuccessMessage.value = "Applied Interactive Web Edition (HTML5) Reader Configuration"
+        }
+    }
+
     fun importCustomData(title: String, subtitle: String, contentText: String) {
         val currentBook = book.value ?: return
         val currentSectionsList = sections.value
@@ -808,12 +838,17 @@ class BookViewModel(application: Application) : AndroidViewModel(application) {
                 val fileName = when (formatType) {
                     "KDP_PRINT_DOCX" -> "KDP_Print_6x9_${b.title.replace(" ", "_")}.html"
                     "KINDLE_DOCX" -> "Kindle_eBook_${b.title.replace(" ", "_")}.html"
+                    "WEB_VERSION_HTML" -> "Web_Reader_${b.title.replace(" ", "_")}.html"
                     else -> "KDP_Print_Proof_${b.title.replace(" ", "_")}.pdf"
                 }
 
                 val file = File(exportDir, fileName)
                 val outputStream = FileOutputStream(file)
-                val content = KdpDocxExporter.generateKdpHtmlFormattedDocument(b, s)
+                val content = if (formatType == "WEB_VERSION_HTML") {
+                    KdpDocxExporter.generateInteractiveWebBookHtml(b, s)
+                } else {
+                    KdpDocxExporter.generateKdpHtmlFormattedDocument(b, s)
+                }
                 outputStream.write(content.toByteArray())
                 outputStream.close()
 
